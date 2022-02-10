@@ -565,10 +565,17 @@ export const createFigma = (config: TConfig): PluginAPI => {
   function cloneChildren(node) {
     const clone = new node.constructor();
     for (let key in node) {
-      clone[key] = node[key];
+      if (typeof node[key] === "function") {
+        clone[key] = node[key].bind(clone);
+      } else {
+        clone[key] = node[key];
+      }
     }
     if ("children" in node) {
       clone.children = node.children.map(cloneChildren);
+      clone.children.forEach(child => {
+        child.parent = clone;
+      });
     }
     clone.pluginData = Object.create(node.pluginData);
     clone.sharedPluginData = Object.create(node.sharedPluginData);
@@ -588,6 +595,9 @@ export const createFigma = (config: TConfig): PluginAPI => {
     createInstance() {
       const instance = new InstanceNodeStub();
       instance.children = this.children.map(cloneChildren);
+      instance.children.forEach(child => {
+        child.parent = instance;
+      });
       instance.pluginData = Object.create(this.pluginData);
       instance.sharedPluginData = Object.create(this.sharedPluginData);
       Object.entries(this.sharedPluginData).forEach(([key, val]) => {

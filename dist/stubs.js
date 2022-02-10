@@ -544,10 +544,18 @@ exports.createFigma = function (config) {
     function cloneChildren(node) {
         var clone = new node.constructor();
         for (var key in node) {
-            clone[key] = node[key];
+            if (typeof node[key] === "function") {
+                clone[key] = node[key].bind(clone);
+            }
+            else {
+                clone[key] = node[key];
+            }
         }
         if ("children" in node) {
             clone.children = node.children.map(cloneChildren);
+            clone.children.forEach(function (child) {
+                child.parent = clone;
+            });
         }
         clone.pluginData = Object.create(node.pluginData);
         clone.sharedPluginData = Object.create(node.sharedPluginData);
@@ -568,6 +576,9 @@ exports.createFigma = function (config) {
         ComponentNodeStub.prototype.createInstance = function () {
             var instance = new InstanceNodeStub();
             instance.children = this.children.map(cloneChildren);
+            instance.children.forEach(function (child) {
+                child.parent = instance;
+            });
             instance.pluginData = Object.create(this.pluginData);
             instance.sharedPluginData = Object.create(this.sharedPluginData);
             Object.entries(this.sharedPluginData).forEach(function (_a) {
