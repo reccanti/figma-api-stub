@@ -551,6 +551,10 @@ exports.createFigma = function (config) {
         }
         clone.pluginData = Object.create(node.pluginData);
         clone.sharedPluginData = Object.create(node.sharedPluginData);
+        Object.entries(node.sharedPluginData).forEach(function (_a) {
+            var key = _a[0], val = _a[1];
+            clone.sharedPluginData[key] = Object.create(val);
+        });
         return clone;
     }
     var ComponentNodeStub = /** @class */ (function () {
@@ -566,6 +570,10 @@ exports.createFigma = function (config) {
             instance.children = this.children.map(cloneChildren);
             instance.pluginData = Object.create(this.pluginData);
             instance.sharedPluginData = Object.create(this.sharedPluginData);
+            Object.entries(this.sharedPluginData).forEach(function (_a) {
+                var key = _a[0], val = _a[1];
+                instance.sharedPluginData[key] = Object.create(val);
+            });
             instance.mainComponent = this;
             return instance;
         };
