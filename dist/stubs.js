@@ -234,7 +234,12 @@ exports.createFigma = function (config) {
             if (!this.pluginData) {
                 this.pluginData = {};
             }
-            this.pluginData[key] = value;
+            if (value === "") {
+                delete this.pluginData[key];
+            }
+            else {
+                this.pluginData[key] = value;
+            }
         };
         BaseNodeMixinStub.prototype.getPluginData = function (key) {
             if (joinedConfig.simulateErrors && this.removed) {
@@ -259,7 +264,12 @@ exports.createFigma = function (config) {
             if (!this.sharedPluginData[namespace]) {
                 this.sharedPluginData[namespace] = {};
             }
-            this.sharedPluginData[namespace][key] = value;
+            if (value === "") {
+                delete this.sharedPluginData[namespace][key];
+            }
+            else {
+                this.sharedPluginData[namespace][key] = value;
+            }
         };
         BaseNodeMixinStub.prototype.getSharedPluginData = function (namespace, key) {
             if (!this.sharedPluginData) {
